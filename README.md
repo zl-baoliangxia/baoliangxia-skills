@@ -29,6 +29,33 @@ npx skills add zl-baoliangxia/baoliangxia-skills
 npx skills add zl-baoliangxia/baoliangxia-skills --skill baoliangxia-skills
 ```
 
+默认安装到当前项目。如需安装到用户级（所有项目共用），加上 `-g`，并用 `-a` 指定 Agent，例如 Codex：
+
+```bash
+npx skills add zl-baoliangxia/baoliangxia-skills --skill baoliangxia-skills -g -a codex -y
+```
+
+### 🔄 更新技能
+
+仓库有新版本后，用同一个 CLI 即可更新到最新版：
+
+```bash
+# 更新已安装的全局（用户级）技能
+npx skills update baoliangxia-skills -g -y
+
+# 更新项目级技能
+npx skills update baoliangxia-skills -p -y
+
+# 查看已安装的技能
+npx skills ls -g
+```
+
+- 如果 `update` 提示已是最新，但你确认仓库有新版本，可以重新执行上面的 `npx skills add ...` 命令，它会从 GitHub 拉取最新版并覆盖本地副本。
+- 更新只替换技能文件，不会影响环境变量中的 `CANVASMIND_AGENT_GATEWAY_API_KEY`。
+- 更新后请重启 Agent 或新开一个会话，让新版技能生效。
+
+### ⚙️ 配置 API Key
+
 安装完成后，设置环境变量即可使用：
 
 ```bash
@@ -60,7 +87,7 @@ $env:CANVASMIND_AGENT_GATEWAY_API_KEY = "your-api-key"
 
 ## 🧠 支持的模型
 
-所有模型统一通过 `create_model_generation.py --model <模型标识>` 调用，各模型的参数拼装规则和不可用能力见 [`references/models/`](skills/baoliangxia-skills/references/models/)。
+所有模型统一通过 `create_model_generation.py --model <模型标识>` 调用，各模型的参数拼装规则和不可用能力见 [`references/models/`](skills/baoliangxia-skills/references/models)。
 
 | 类型 | 模型标识 |
 |------|----------|

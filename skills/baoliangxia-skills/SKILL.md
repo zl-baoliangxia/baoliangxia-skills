@@ -25,7 +25,7 @@ Use the bundled Python scripts to call baoliangxia-skills. Preserve the user's p
 
 When a user asks how to use this skill, give this concise onboarding response in order before discussing advanced model options:
 
-1. If the skill is not already available to their Agent, offer to install the skill into their Agent. Ask permission before installing it, then use the Agent's skill-installation workflow.
+1. If the skill is not already available to their Agent, offer to install the skill into their Agent. Ask permission before installing it, then follow the "Install or update with the skills CLI" steps in the Installation section.
 2. The Agent, not the user, checks whether Python is available after installation. Explain that Python 3 is required. If it is unavailable, offer to install Python after obtaining approval, then verify it before proceeding.
 3. Explain that generations require `CANVASMIND_AGENT_GATEWAY_API_KEY` as an environment variable. Let the user either configure it themselves or provide their key for the AI to configure. If they provide a key, treat it as a secret: use it only for that configuration, never echo or repeat it, and never put it in project files, source control, prompts, or logs. Subsequent scripts must read the key from the environment variable.
 4. Once the skill, Python, and key are ready, tell the user to send a plain-language request in the Agent. State that images default to `doubao-seedream-4.5` and videos default to `doubao-seedance-2.0` when no model is requested. The Agent handles generation, waiting, downloading, and presenting the result.
@@ -132,3 +132,20 @@ For an uncertain retry of the same logical request, reuse the returned `idempote
 ## Installation
 
 Install `SKILL.md`, `scripts/`, and `references/`. Do not install `.env`, cache directories, or credentials.
+
+### Install or update with the skills CLI
+
+The skill is published at `https://github.com/zl-baoliangxia/baoliangxia-skills`. Ask the user for permission before installing or updating, then run one of these commands. Node.js (for `npx`) must be available.
+
+```bash
+# Install (user-level, for Codex)
+npx skills add zl-baoliangxia/baoliangxia-skills --skill baoliangxia-skills -g -a codex -y
+
+# Update an installed copy to the latest version
+npx skills update baoliangxia-skills -g -y
+```
+
+- Replace `-a codex` with another agent name (for example `cursor` or `claude-code`) when the user runs a different Agent. Omit `-g` for a project-level install.
+- If `update` reports nothing to do but the user expects a newer version, re-run the `add` command. It pulls the latest version from GitHub and overwrites the installed copy.
+- Never remove or overwrite the user's `CANVASMIND_AGENT_GATEWAY_API_KEY`. It lives in the environment, not in the skill directory, so updating the skill does not affect it.
+- A newly installed or updated skill is picked up by the Agent in a new session. Tell the user to restart the Agent or open a new conversation.
