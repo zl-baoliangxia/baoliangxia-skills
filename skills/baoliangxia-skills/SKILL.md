@@ -1,0 +1,134 @@
+---
+name: baoliangxia-skills
+description: 爆量匣 (baoliangxia / CanvasMind) AI 生图、生视频技能 - 通过 Agent Gateway 调用 Seedream、Seedance、Nano Banana 2、GPT Image 2、Kling、Wan、MiniMax-H3、Vidu、HappyHorse、即梦视频等模型。覆盖场景：文生图、图生图、参考图生成、文生视频、图生视频、首尾帧、参考视频/音频生成、数字人口播、对口型（lip-sync）、视频超分/提升清晰度、剧集带货短剧广告、本地素材上传、查询生成进度、下载生成结果、配置 API Key。当用户提到爆量匣、baoliangxia、CanvasMind，或要求"画一张/生成一张图""做个海报""生成一段视频/广告片""把这张图做成视频""让这个人物说话""提升视频清晰度""查一下生成状态"时都应触发。Use when the user asks to generate, create, draw, edit, modify, upscale, lip-sync, or check any image, video, or media asset through CanvasMind/爆量匣, including local media upload, generation status, downloads, API-key setup, or garbled Chinese REST prompts.
+user-invocable: true
+metadata:
+  {
+    "openclaw":
+      {
+        "emoji": "🎬",
+        "requires":
+          {
+            "bins": ["python3"],
+            "env": ["CANVASMIND_AGENT_GATEWAY_API_KEY"]
+          },
+        "primaryEnv": "CANVASMIND_AGENT_GATEWAY_API_KEY"
+      }
+  }
+---
+
+# baoliangxia-skills
+
+Use the bundled Python scripts to call baoliangxia-skills. Preserve the user's prompt unless they explicitly request rewriting.
+
+## First-use guidance
+
+When a user asks how to use this skill, give this concise onboarding response in order before discussing advanced model options:
+
+1. If the skill is not already available to their Agent, offer to install the skill into their Agent. Ask permission before installing it, then use the Agent's skill-installation workflow.
+2. The Agent, not the user, checks whether Python is available after installation. Explain that Python 3 is required. If it is unavailable, offer to install Python after obtaining approval, then verify it before proceeding.
+3. Explain that generations require `CANVASMIND_AGENT_GATEWAY_API_KEY` as an environment variable. Let the user either configure it themselves or provide their key for the AI to configure. If they provide a key, treat it as a secret: use it only for that configuration, never echo or repeat it, and never put it in project files, source control, prompts, or logs. Subsequent scripts must read the key from the environment variable.
+4. Once the skill, Python, and key are ready, tell the user to send a plain-language request in the Agent. State that images default to `doubao-seedream-4.5` and videos default to `doubao-seedance-2.0` when no model is requested. The Agent handles generation, waiting, downloading, and presenting the result.
+
+### Agent-native examples
+
+- “用 baoliangxia-skills 生成一张雨夜霓虹街道的电影感插画。”
+- “用 baoliangxia-skills 生成一段 5 秒的产品广告视频。”
+- “把这张图片作为参考，生成一张同风格的海报。”
+
+Keep the user-facing response focused on what to do in the Agent. Do not include terminal instructions or implementation details unless the user specifically asks for them.
+
+## Authentication
+
+For generation requests, read the API key from `CANVASMIND_AGENT_GATEWAY_API_KEY`. Never place it in commands, files, prompts, or logs. The sole exception is a user explicitly providing their key to authorize the AI to configure this environment variable; handle that key using the first-use guidance above.
+
+The default service URL is `https://baoliangxia.com/`. Override it with `CANVASMIND_AGENT_GATEWAY_BASE_URL` or `--base-url` only when the user supplies another deployment.
+
+## Model routing
+
+Determine the exact model before building arguments. If the user does not name a model, use `doubao-seedream-4.5` for images and `doubao-seedance-2.0` for videos.
+
+If the user does not name an aspect ratio, resolution, or clarity (清晰度), do not copy sample values from a reference. Omit `--aspect-ratio` and `--resolution`. `scripts/create_model_generation.py` fills both from that model's configured default. Explicit user values always win. A default written in the model document wins over the shared fallback. Where the document states none, the ratio is `16:9` when the model exposes it, and the resolution is the supported tier nearest 720p with that model's exact spelling. Image models without a documented size use `1K` when offered, otherwise the lowest tier. Models that cannot express a field get no default for it. `happyhorse-1.1` omits the ratio when an image or video is attached. `MiniMax-H3` uses `adaptive` in that case. `--list-models` prints the text-only `defaultAspectRatio` and `defaultResolution`.
+
+Read only the selected row's reference. Shared family references are intentional. Submit the exact database identifier in the first column, even when the reference uses a different upstream name. In particular:
+
+- Nano Banana 2 → `zl-ooe-3.1-flash-image`
+- Image 2 sync → `zl-pep-image-2`
+- Image 2 async → `zl-pep-image-2-async`
+- 剧集带货 / Vidu Short Ads → `vidu-short_drama_ads_fast`
+
+Every available row uses `scripts/create_model_generation.py "PROMPT" --model MODEL [options]`. Run `--list-models` for the machine-readable catalog. Add `--dry-run` to validate and inspect the exact endpoint and payload without reading credentials or making a network request.
+
+| Exact database model identifier | Read only this reference | Availability |
+|---|---|---|
+| `doubao-seedream-4.5` | `references/models/doubao-seedream-4.5.md` | available |
+| `doubao-seedream-5.0-lite` | `references/models/doubao-seedream-5.0-lite.md` | available |
+| `doubao-seedream-5.0-pro` | `references/models/doubao-seedream-5.0-pro.md` | available |
+| `zl-ooe-3.1-flash-image` | `references/models/nanobanana-2.md` | available |
+| `zl-pep-image-2` | `references/models/zl-pep-image-2.md` | available |
+| `zl-pep-image-2-async` | `references/models/zl-pep-image-2.md` | available |
+| `doubao-seedance-2.0` | `references/models/doubao-seedance-2.0.md` | available |
+| `doubao-seedance-2.0-fast` | `references/models/doubao-seedance-2.0.md` | available |
+| `doubao-seedance-2.0-mini` | `references/models/doubao-seedance-2.0.md` | available |
+| `doubao-seedance-2.5` | `references/models/doubao-seedance-2.5.md` | available |
+| `happyhorse-1.1` | `references/models/happyhorse-1.1.md` | available |
+| `jielan-video` | `references/models/jielan-video.md` | available |
+| `jielan-video-lite` | `references/models/jielan-video.md` | available |
+| `jielan-video-mini` | `references/models/jielan-video.md` | available |
+| `kling-v3-omni` | `references/models/kling-v3-omni.md` | available |
+| `MiniMax-H3` | `references/models/minimax-h3.md` | available |
+| `video-sr` | `references/models/video-sr.md` | fail-closed until Gateway exposes SR metadata |
+| `vidu` | `references/models/vidu-solutions.md` | available for text-driven lip sync |
+| `vidu-short_drama_ads_fast` | `references/models/vidu-short-ads.md` | available |
+| `viduq2-pro` | `references/models/vidu-solutions.md` | available for text-driven digital human |
+| `viduq2-turbo` | `references/models/vidu-solutions.md` | available for text-driven digital human |
+| `viduq3-ad` | `references/models/vidu-q3.md` | available |
+| `viduq3-mix` | `references/models/vidu-q3.md` | available |
+| `wan3.0-video` | `references/models/wan3.0-video.md` | available |
+| `wan3.0-video-prime` | `references/models/wan3.0-video.md` | available |
+
+Do not substitute an upstream documentation name such as `gpt-image-2-async`, `gemini-3.1-flash-image-preview`, or `zl-video` for the database identifier.
+
+## Execution contract
+
+1. Read the selected model reference.
+2. Upload every local reference asset with `scripts/upload_file.py FILE` and retain each `uploadId`.
+3. Translate user intent to flags using the reference's **参数拼装** table. Omit `--aspect-ratio` and `--resolution` when the user did not specify them, so the script can apply the model default. Omit every other optional flag the user did not request.
+4. If the request appears under **不可用能力**, stop before submission. Do not silently drop it, approximate it with another field, or hide it in metadata.
+5. Run `scripts/create_model_generation.py` with the exact model identifier and retain `generationId` plus `idempotencyKey`.
+6. Run `scripts/query_generation.py GENERATION_ID --wait --output-dir OUTPUT_DIR` to wait and download results.
+
+All scripts accept `--help`. On Windows, use `python` or `py -3` when `python3` is unavailable.
+
+## Shared commands
+
+```bash
+python3 {baseDir}/scripts/create_model_generation.py --list-models
+python3 {baseDir}/scripts/create_model_generation.py "USER_PROMPT" \
+  --model MiniMax-H3 --duration 5 --aspect-ratio 16:9 --dry-run
+python3 {baseDir}/scripts/upload_file.py /path/to/reference.png
+python3 {baseDir}/scripts/create_model_generation.py "USER_PROMPT" \
+  --model doubao-seedream-4.5 --input-upload-id upl_xxx
+python3 {baseDir}/scripts/query_generation.py GENERATION_ID --wait \
+  --output-dir /path/to/canvasmind_results/GENERATION_ID
+```
+
+Generation payloads accept uploaded assets only as `{ "uploadId": "upl_xxx" }`. Do not pass a local path, external URL, Base64, or Data URL directly to a creation script.
+
+`pending` and `running` are intermediate. `completed`, `failed`, and `stopped` are terminal. Only `completed` is success.
+
+For an uncertain retry of the same logical request, reuse the returned `idempotencyKey` with `--idempotency-key`. When prompt, model, media, or parameters change, use a new key.
+
+## Common mistakes
+
+| Mistake | Correct behavior |
+|---|---|
+| Copying the upstream model name from a reference | Use the exact database identifier from the routing table |
+| Passing a resolution with the wrong case | Preserve the documented value exactly, such as `1080P` for Wan and `1080p` for Seedance |
+| Passing a control the Gateway cannot express | Stop and report the unavailable capability |
+| Copying a sample ratio or resolution when the user did not ask for one | Omit `--aspect-ratio` and `--resolution` and let the script apply the model default |
+| Loading every model reference | Load only the selected row's reference |
+
+## Installation
+
+Install `SKILL.md`, `scripts/`, and `references/`. Do not install `.env`, cache directories, or credentials.

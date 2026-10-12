@@ -1,0 +1,54 @@
+# 环境变量（含 API Key，切勿提交）
+.env
+.env.*
+
+# npx skills add 生成的安装目录（agent symlinks）
+.agents/
+.agent/
+.adal/
+.augment/
+.claude/
+.codebuddy/
+.commandcode/
+.continue/
+.cortex/
+.cursor/
+.factory/
+.goose/
+.iflow/
+.junie/
+.kilocode/
+.kiro/
+.kode/
+.mcpjam/
+.mux/
+.neovate/
+.openhands/
+.pi/
+.pochi/
+.qoder/
+.qwen/
+.roo/
+.trae/
+.vibe/
+.windsurf/
+.zencoder/
+skills-lock.json
+
+# 生成结果下载目录
+canvasmind_results/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# IDE
+.vscode/
+.idea/
