@@ -1,6 +1,6 @@
 ---
 name: baoliangxia-skills
-description: 爆量匣 (baoliangxia / CanvasMind) AI 生图、生视频技能 - 通过 Agent Gateway 调用 Seedream、Seedance、Nano Banana 2、GPT Image 2、Kling、Wan、MiniMax-H3、Vidu、HappyHorse、即梦视频等模型。覆盖场景：文生图、图生图、参考图生成、文生视频、图生视频、首尾帧、参考视频/音频生成、数字人口播、对口型（lip-sync）、视频超分/提升清晰度、剧集带货短剧广告、本地素材上传、查询生成进度、下载生成结果、配置 API Key。当用户提到爆量匣、baoliangxia、CanvasMind，或要求"画一张/生成一张图""做个海报""生成一段视频/广告片""把这张图做成视频""让这个人物说话""提升视频清晰度""查一下生成状态"时都应触发。Use when the user asks to generate, create, draw, edit, modify, upscale, lip-sync, or check any image, video, or media asset through CanvasMind/爆量匣, including local media upload, generation status, downloads, API-key setup, or garbled Chinese REST prompts.
+description: 爆量匣 (baoliangxia / CanvasMind) AI 生图、生视频技能 - 通过 Agent Gateway 调用 Seedream、Seedance、GPT Image 2、Kling、Wan、MiniMax-H3、Vidu、HappyHorse、即梦视频等模型。覆盖场景：文生图、图生图、参考图生成、文生视频、图生视频、首尾帧、参考视频/音频生成、数字人口播、对口型（lip-sync）、视频超分/提升清晰度、剧集带货短剧广告、本地素材上传、查询生成进度、下载生成结果、配置 API Key。当用户提到爆量匣、baoliangxia、CanvasMind，或要求"画一张/生成一张图""做个海报""生成一段视频/广告片""把这张图做成视频""让这个人物说话""提升视频清晰度""查一下生成状态"时都应触发。Use when the user asks to generate, create, draw, edit, modify, upscale, lip-sync, or check any image, video, or media asset through CanvasMind/爆量匣, including local media upload, generation status, downloads, API-key setup, or garbled Chinese REST prompts.
 user-invocable: true
 metadata:
   {
@@ -52,7 +52,6 @@ If the user does not name an aspect ratio, resolution, or clarity (清晰度), d
 
 Read only the selected row's reference. Shared family references are intentional. Submit the exact database identifier in the first column, even when the reference uses a different upstream name. In particular:
 
-- Nano Banana 2 → `zl-ooe-3.1-flash-image`
 - Image 2 sync → `zl-pep-image-2`
 - Image 2 async → `zl-pep-image-2-async`
 - 剧集带货 / Vidu Short Ads → `vidu-short_drama_ads_fast`
@@ -64,7 +63,7 @@ Every available row uses `scripts/create_model_generation.py "PROMPT" --model MO
 | `doubao-seedream-4.5` | `references/models/doubao-seedream-4.5.md` | available |
 | `doubao-seedream-5.0-lite` | `references/models/doubao-seedream-5.0-lite.md` | available |
 | `doubao-seedream-5.0-pro` | `references/models/doubao-seedream-5.0-pro.md` | available |
-| `zl-ooe-3.1-flash-image` | `references/models/nanobanana-2.md` | available |
+| `zl-ooe-3.1-flash-image` | `references/models/zl-ooe-3.1-flash-image.md` | available |
 | `zl-pep-image-2` | `references/models/zl-pep-image-2.md` | available |
 | `zl-pep-image-2-async` | `references/models/zl-pep-image-2.md` | available |
 | `doubao-seedance-2.0` | `references/models/doubao-seedance-2.0.md` | available |
@@ -87,7 +86,7 @@ Every available row uses `scripts/create_model_generation.py "PROMPT" --model MO
 | `wan3.0-video` | `references/models/wan3.0-video.md` | available |
 | `wan3.0-video-prime` | `references/models/wan3.0-video.md` | available |
 
-Do not substitute an upstream documentation name such as `gpt-image-2-async`, `gemini-3.1-flash-image-preview`, or `zl-video` for the database identifier.
+Do not substitute an upstream documentation name such as `gpt-image-2-async` or `zl-video` for the database identifier.
 
 ## Execution contract
 
@@ -97,8 +96,75 @@ Do not substitute an upstream documentation name such as `gpt-image-2-async`, `g
 4. If the request appears under **不可用能力**, stop before submission. Do not silently drop it, approximate it with another field, or hide it in metadata.
 5. Run `scripts/create_model_generation.py` with the exact model identifier and retain `generationId` plus `idempotencyKey`.
 6. Run `scripts/query_generation.py GENERATION_ID --wait --output-dir OUTPUT_DIR` to wait and download results.
+7. Present the result using the fixed structure in **Result presentation**.
 
 All scripts accept `--help`. On Windows, use `python` or `py -3` when `python3` is unavailable.
+
+## Result presentation
+
+After a generation reaches `completed` and the files are downloaded, reply with the fixed structure below. Write it in the user's language (default 中文) and keep the section labels exactly as shown. Show the media itself (image preview or video file) alongside this text when the Agent supports it.
+
+```markdown
+**<图片|视频|插画|海报…>已生成 ✅**
+
+**规格**：<比例/方向> · <分辨率档位>（<像素宽×高>） · `<exact model id>` · <文生图|图生图|文生视频|图生视频…> · <文件大小或时长>
+
+**内容要点**
+- <主体与场景>
+- <构图/镜头/光线>
+- <色调/风格>
+
+**文件**
+`<absolute path of the downloaded file>`
+
+本次生成消耗约 <N> 积分。   <!-- optional: only when the Gateway reports a cost -->
+
+**说明**
+- <only when a default was applied or the request was adjusted; see rules below>
+
+**可调整方向**
+- <2–4 concrete follow-up options>
+
+告诉我要改哪一点即可。
+```
+
+Rules:
+
+1. **Status line.** One short line: the asset type plus `已生成 ✅`. On `failed` or `stopped`, replace it with `生成失败 ❌` or `生成已停止 ⏹`, state the reason returned by the Gateway, and skip the remaining sections except 可调整方向 (suggest a retry or a changed parameter).
+2. **规格.** One line, items separated by ` · `. The model identifier is wrapped in backticks. Fill the ratio, resolution, pixel size, and file size or duration from the actual result or the submitted parameters, never from memory. Drop an item rather than guess it.
+3. **内容要点.** 3 bullets or one compact paragraph describing what is actually in the result: subject and scene, composition or camera, color and style. Describe what you can see or what the prompt specified. Do not invent details.
+4. **文件.** Give the full local path of every downloaded file in a code span, one per line. For several outputs, list them in order.
+5. **说明.** Include this section only when something needs explaining. Typical cases: the user left the ratio or resolution unset so the model default was used (say which value and why), the user's wording was only partly specific (for example 只说了"横版"), or a requested capability was unavailable. Omit the whole section when nothing needs explaining.
+6. **积分消耗.** Mention `本次生成消耗约 N 积分` right after 文件 only when the Gateway response reports a cost. Never estimate or invent it.
+7. **可调整方向.** Offer 2–4 short, concrete options the user can pick, such as a different ratio or a higher resolution, a different camera angle, a different color mood, adding or removing an element. Prefer options that this model can express.
+8. **Closing line.** End with exactly one short invitation, `告诉我要改哪一点即可。`, and nothing after it.
+9. **Do not** paste raw JSON, `generationId`, `idempotencyKey`, endpoints, or script output into this reply unless the user asks.
+
+Example for a text-to-image result:
+
+```markdown
+**图片已生成 ✅**
+
+**规格**：16:9 横版 · 2K（2848×1600） · `doubao-seedream-4.5` · 文生图 · 约 0.85 MB
+
+**内容要点**
+- 静物近景：窗边木桌为画面主体，窗外交代山间木屋环境
+- 桌上一杯咖啡与一本摊开的书，晨光斜射形成长条暖影
+- 日系清新质感：柔和暖阳、低饱和浅木色与米白，通透干净的清晨氛围
+
+**文件**
+`C:\Users\me\canvasmind_results\GENERATION_ID\01.jpg`
+
+**说明**
+- 你只指定了"横版"，未指定比例与分辨率，因此按模型默认出图：比例取 16:9 横版，分辨率采用 2K。
+
+**可调整方向**
+- 换成 21:9 更宽的电影感横幅，或 3:2 更接近胶片静物比例
+- 提升到 4K 出图，便于大幅面或印刷使用
+- 调整氛围：更冷的晨曦色调 / 更强的暖色逆光 / 更克制的极简留白
+
+告诉我要改哪一点即可。
+```
 
 ## Shared commands
 

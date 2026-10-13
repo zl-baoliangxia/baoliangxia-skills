@@ -59,7 +59,7 @@ MODELS: dict[str, ModelSpec] = {
         max_input_images=10, default_ratio="1:1", default_resolution="2K",
     ),
     "zl-ooe-3.1-flash-image": ModelSpec(
-        "images", "references/models/nanobanana-2.md",
+        "images", "references/models/zl-ooe-3.1-flash-image.md",
         ratios=("1:1", "3:4", "4:3", "16:9", "9:16", "21:9", "3:2", "2:3", "5:4", "4:5"),
         max_input_images=3, default_ratio="16:9",
     ),

@@ -1,6 +1,6 @@
-# Nano Banana 2 (`zl-ooe-3.1-flash-image`)
+# `zl-ooe-3.1-flash-image`
 
-The upstream family is Nano Banana 2 / `gemini-3.1-flash-image-preview`, but CanvasMind requests must use the database identifier `zl-ooe-3.1-flash-image`.
+CanvasMind requests must use the database identifier `zl-ooe-3.1-flash-image`.
 
 ## Script
 
@@ -26,5 +26,4 @@ python3 {baseDir}/scripts/create_model_generation.py "把背景改成海边日�
 
 ## 不可用能力
 
-Although the upstream model supports `imageSize` (`1K`/`2K`/`4K`), the current Agent Gateway image contract cannot carry that extra field. Do not pass `--resolution`, output count, output format, response modality, or raw Gemini `contents`.
-
+Although the model supports `imageSize` (`1K`/`2K`/`4K`), the current Agent Gateway image contract cannot carry that extra field. Do not pass `--resolution`, output count, output format, response modality, or a raw provider `contents` payload.
