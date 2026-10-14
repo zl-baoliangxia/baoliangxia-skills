@@ -81,7 +81,6 @@ $env:CANVASMIND_AGENT_GATEWAY_API_KEY = "your-api-key"
 | 变量 | 必填 | 默认值 | 说明 |
 |------|------|--------|------|
 | `CANVASMIND_AGENT_GATEWAY_API_KEY` | ✅ | — | Agent Gateway API 鉴权密钥 |
-| `CANVASMIND_AGENT_GATEWAY_BASE_URL` | ❌ | `https://baoliangxia.com/` | 服务地址，仅在使用私有部署时修改 |
 
 > ⚠️ API Key 属于机密信息：请只通过环境变量配置，不要写入项目文件、提交到代码仓库、或粘贴到提示词/日志中。
 
