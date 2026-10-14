@@ -89,12 +89,12 @@ $env:CANVASMIND_AGENT_GATEWAY_API_KEY = "your-api-key"
 
 所有模型统一通过 `create_model_generation.py --model <模型标识>` 调用，各模型的参数拼装规则和不可用能力见 [`references/models/`](skills/baoliangxia-skills/references/models)。
 
-| 类型 | 模型标识 |
-|------|----------|
-| 图片 | `doubao-seedream-4.5` `doubao-seedream-5.0-lite` `doubao-seedream-5.0-pro` `zl-ooe-3.1-flash-image` `zl-pep-image-2` `zl-pep-image-2-async` |
-| 视频 | `doubao-seedance-2.0` `doubao-seedance-2.0-fast` `doubao-seedance-2.0-mini` `doubao-seedance-2.5` `happyhorse-1.1` `jielan-video` `jielan-video-lite` `jielan-video-mini` `kling-v3-omni` `MiniMax-H3` `wan3.0-video` `wan3.0-video-prime` |
-| 数字人 / 口播 / 广告 | `vidu` `viduq2-pro` `viduq2-turbo` `viduq3-ad` `viduq3-mix` `vidu-short_drama_ads_fast` |
-| 视频超分 | `video-sr`（暂未开放，Gateway 暴露相关元数据前会拒绝提交） |
+| 类型   | 模型标识                                                                                                                                                                                                                                       |
+|------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| 图片   | `doubao-seedream-4.5` `doubao-seedream-5.0-lite` `doubao-seedream-5.0-pro` `zl-ooe-3.1-flash-image` `zl-pep-image-2` `zl-pep-image-2-async`                                                                                                |
+| 视频   | `doubao-seedance-2.0` `doubao-seedance-2.0-fast` `doubao-seedance-2.0-mini` `doubao-seedance-2.5` `happyhorse-1.1` `jielan-video` `jielan-video-lite` `jielan-video-mini` `kling-v3-omni` `MiniMax-H3` `wan3.0-video` `wan3.0-video-prime` |
+| 爆款复刻 | 即将支持                                                                                                                                                                                                                                       |
+| 视频超分 | 即将支持                                                                                                                                                                                                                                       |
 
 > 以 `python3 skills/baoliangxia-skills/scripts/create_model_generation.py --list-models` 的输出为准。
 
