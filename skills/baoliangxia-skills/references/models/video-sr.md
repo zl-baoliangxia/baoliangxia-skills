@@ -6,7 +6,7 @@ The model exists and is enabled, but the current Agent Gateway contract cannot c
 
 The configured resolution default would be `720p`, but this model stays fail-closed and must not be submitted.
 
-The upstream operation needs one source video plus target resolution `720p`, `1080p`, `2k`, or `4k`. CanvasMind's internal SR executor additionally requires a structured `superResolution` payload containing source URL and source-duration metadata.
+The upstream operation needs one source video plus target resolution `720p`, `1080p`, `2k`, or `4k`. baoliangxia's internal SR executor additionally requires a structured `superResolution` payload containing source URL and source-duration metadata.
 
 ## 不可用能力
 

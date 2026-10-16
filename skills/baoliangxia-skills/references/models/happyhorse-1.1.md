@@ -1,6 +1,6 @@
 # `happyhorse-1.1`
 
-CanvasMind routes this database model to the appropriate HappyHorse 1.1 text/image/reference-video mode based on supplied media.
+baoliangxia routes this database model to the appropriate HappyHorse 1.1 text/image/reference-video mode based on supplied media.
 
 ## Script
 
@@ -29,5 +29,5 @@ python3 {baseDir}/scripts/create_model_generation.py "让人物自然转身" \
 
 ## 不可用能力
 
-The Gateway does not expose the upstream variant name directly, audio settings, output-audio controls, or variant-specific edit parameters. Do not replace `happyhorse-1.1` with `happyhorse-1.1-t2v`/`i2v`/`r2v` in the CanvasMind request.
+The Gateway does not expose the upstream variant name directly, audio settings, output-audio controls, or variant-specific edit parameters. Do not replace `happyhorse-1.1` with `happyhorse-1.1-t2v`/`i2v`/`r2v` in the baoliangxia request.
 

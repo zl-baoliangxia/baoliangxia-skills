@@ -1,6 +1,6 @@
-# Image 2 family
+# Image 2 async
 
-Use this reference for `zl-pep-image-2` (sync) and `zl-pep-image-2-async` (async). The upstream documentation calls them `gpt-image-2` and `gpt-image-2-async`; never send those upstream names as the CanvasMind `model` value.
+Use this reference for `zl-pep-image-2-async`. The upstream documentation calls it `gpt-image-2-async`; never send that upstream name as the baoliangxia `model` value.
 
 ## Script
 
@@ -11,7 +11,7 @@ python3 {baseDir}/scripts/create_model_generation.py "USER_PROMPT" \
 
 ## 参数拼装
 
-Omitted `--aspect-ratio` becomes `16:9`. Omitted `--resolution` becomes `1K`, the tier nearest 720p, for both `zl-pep-image-2` and `zl-pep-image-2-async`. Explicit flags win.
+Omitted `--aspect-ratio` becomes `16:9`. Omitted `--resolution` becomes `1K`, the tier nearest 720p. Explicit flags win.
 
 | Intent | Flag | Rule |
 |---|---|---|
@@ -26,7 +26,7 @@ python3 {baseDir}/scripts/create_model_generation.py "改成电影概念设计�
   --n 2 --input-upload-id upl_reference
 ```
 
-CanvasMind normalizes both provider lifecycles to a `generationId`; always use the shared query script.
+baoliangxia returns a `generationId`; always use the shared query script.
 
 ## 不可用能力
 

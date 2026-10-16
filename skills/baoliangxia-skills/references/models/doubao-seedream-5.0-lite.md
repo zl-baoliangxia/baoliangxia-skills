@@ -24,6 +24,8 @@ The script hardcodes the model. Omitted `--aspect-ratio` becomes `1:1` and omitt
 
 Reference image count plus requested output count must not exceed 15. If `--n` is absent, count one output.
 
+For a total target, use `create_batch_generations.py --count N`: n is capped by reference slots, each task completes before calculating the actual shortfall. The Gateway selects group mode when n is explicit; actual returned count may be lower.
+
 ```bash
 python3 {baseDir}/scripts/create_model_generation.py "生成三张商品场景图" \
   --model doubao-seedream-5.0-lite \

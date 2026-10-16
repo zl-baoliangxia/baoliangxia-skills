@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a video generation through the CanvasMind REST API."""
+"""Create a video generation through the baoliangxia REST API."""
 
 import argparse
 import json

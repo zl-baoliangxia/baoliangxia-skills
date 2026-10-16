@@ -1,6 +1,6 @@
 # `zl-ooe-3.1-flash-image`
 
-CanvasMind requests must use the database identifier `zl-ooe-3.1-flash-image`.
+baoliangxia requests must use the database identifier `zl-ooe-3.1-flash-image`.
 
 ## Script
 

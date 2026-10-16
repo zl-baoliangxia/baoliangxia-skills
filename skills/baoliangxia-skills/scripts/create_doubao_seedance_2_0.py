@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a doubao-seedance-2.0 video through CanvasMind Agent Gateway."""
+"""Create a doubao-seedance-2.0 video through baoliangxia Agent Gateway."""
 
 import argparse
 

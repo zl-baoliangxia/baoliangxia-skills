@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create an image generation through the CanvasMind REST API."""
+"""Create an image generation through the baoliangxia REST API."""
 
 import argparse
 import uuid

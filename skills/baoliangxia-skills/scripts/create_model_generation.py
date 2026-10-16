@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create an image or video using an enabled CanvasMind database model identifier."""
+"""Create an image or video using an enabled baoliangxia database model identifier."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from _generation import add_transport_args, append_if_present, submit, upload_re
 from _models import MODELS, ModelSpec, catalog_rows
 
 
-def parse_args() -> argparse.Namespace:
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("prompt", nargs="?", help="Prompt text; forwarded unchanged")
     parser.add_argument("--model", help="Exact enabled database modelKey")
@@ -30,7 +30,11 @@ def parse_args() -> argparse.Namespace:
         help="Validate arguments and print the endpoint/payload without authentication or network access",
     )
     add_transport_args(parser)
-    return parser.parse_args()
+    return parser
+
+
+def parse_args(argv=None) -> argparse.Namespace:
+    return build_parser().parse_args(argv)
 
 
 def require_choice(label: str, value: str | None, choices: tuple[str, ...]) -> None:
@@ -143,11 +147,7 @@ def build_payload(args: argparse.Namespace, spec: ModelSpec) -> dict:
     return payload
 
 
-def main() -> None:
-    args = parse_args()
-    if args.list_models:
-        print_json(catalog_rows())
-        return
+def prepare_generation(args: argparse.Namespace) -> tuple[ModelSpec, dict]:
     if not args.model:
         raise ValueError("--model is required")
     spec = MODELS.get(args.model)
@@ -160,6 +160,15 @@ def main() -> None:
     apply_model_defaults(args, spec)
     validate_common(args, spec)
     payload = build_payload(args, spec)
+    return spec, payload
+
+
+def main() -> None:
+    args = parse_args()
+    if args.list_models:
+        print_json(catalog_rows())
+        return
+    spec, payload = prepare_generation(args)
     if args.dry_run:
         print_json({"endpoint": f"/api/v1/{spec.kind}/generations", "payload": payload})
         return

@@ -1,6 +1,6 @@
 # 🎬 baoliangxia-skills
 
-> AI Agent Skills for [爆量匣（baoliangxia）](https://baoliangxia.com/) — 让你的 AI Agent 轻松调用爆量匣 / CanvasMind Agent Gateway 的生图、生视频能力。
+> AI Agent Skills for [爆量匣（baoliangxia）](https://baoliangxia.com/) — 让你的 AI Agent 轻松调用爆量匣 Agent Gateway 的生图、生视频能力。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Python 3.8+](https://img.shields.io/badge/Python-3.8+-green.svg)](https://python.org)
@@ -51,7 +51,7 @@ npx skills ls -g
 ```
 
 - 如果 `update` 提示已是最新，但你确认仓库有新版本，可以重新执行上面的 `npx skills add ...` 命令，它会从 GitHub 拉取最新版并覆盖本地副本。
-- 更新只替换技能文件，不会影响环境变量中的 `CANVASMIND_AGENT_GATEWAY_API_KEY`。
+- 更新只替换技能文件，不会影响环境变量中的 `BAOLIANGXIA_AGENT_GATEWAY_API_KEY`。
 - 更新后请重启 Agent 或新开一个会话，让新版技能生效。
 
 ### ⚙️ 配置 API Key
@@ -60,12 +60,12 @@ npx skills ls -g
 
 ```bash
 # macOS / Linux
-export CANVASMIND_AGENT_GATEWAY_API_KEY="your-api-key"
+export BAOLIANGXIA_AGENT_GATEWAY_API_KEY="your-api-key"
 ```
 
 ```powershell
 # Windows PowerShell（当前会话）
-$env:CANVASMIND_AGENT_GATEWAY_API_KEY = "your-api-key"
+$env:BAOLIANGXIA_AGENT_GATEWAY_API_KEY = "your-api-key"
 ```
 
 > 🎉 **就这么简单！** 安装后直接在 Agent 里用自然语言提需求即可，例如：
@@ -80,7 +80,7 @@ $env:CANVASMIND_AGENT_GATEWAY_API_KEY = "your-api-key"
 
 | 变量 | 必填 | 默认值 | 说明 |
 |------|------|--------|------|
-| `CANVASMIND_AGENT_GATEWAY_API_KEY` | ✅ | — | Agent Gateway API 鉴权密钥 |
+| `BAOLIANGXIA_AGENT_GATEWAY_API_KEY` | ✅ | — | Agent Gateway API 鉴权密钥 |
 
 > ⚠️ API Key 属于机密信息：请只通过环境变量配置，不要写入项目文件、提交到代码仓库、或粘贴到提示词/日志中。
 
@@ -90,7 +90,7 @@ $env:CANVASMIND_AGENT_GATEWAY_API_KEY = "your-api-key"
 
 | 类型   | 模型标识                                                                                                                                                                                                                                       |
 |------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| 图片   | `doubao-seedream-4.5` `doubao-seedream-5.0-lite` `doubao-seedream-5.0-pro` `zl-ooe-3.1-flash-image` `zl-pep-image-2` `zl-pep-image-2-async`                                                                                                |
+| 图片   | `doubao-seedream-4.5` `doubao-seedream-5.0-lite` `doubao-seedream-5.0-pro` `zl-ooe-3.1-flash-image` `zl-pep-image-2-async`                                                                                                |
 | 视频   | `doubao-seedance-2.0` `doubao-seedance-2.0-fast` `doubao-seedance-2.0-mini` `doubao-seedance-2.5` `happyhorse-1.1` `jielan-video` `jielan-video-lite` `jielan-video-mini` `kling-v3-omni` `MiniMax-H3` `wan3.0-video` `wan3.0-video-prime` |
 | 爆款复刻 | 即将支持                                                                                                                                                                                                                                       |
 | 视频超分 | 即将支持                                                                                                                                                                                                                                       |
@@ -99,13 +99,15 @@ $env:CANVASMIND_AGENT_GATEWAY_API_KEY = "your-api-key"
 
 ## 🛠️ 手动使用 / 调试
 
+多视频和单输出图片会先并发提交、再统一等待；支持数量参数的图片按实际返回数量补缺。相同提示词使用 `create_batch_generations.py "提示词" --model 模型 --count 5`，不同提示词使用 `--jobs-file`。详细规则、清单格式及恢复方式见 [批量生成说明](skills/baoliangxia-skills/references/batch-generation.md)。
+
 <details>
 <summary>如果你需要手动调用脚本或调试，点击展开查看详细用法</summary>
 
 ### 前置要求
 
 - **Python 3.8+**（仅使用标准库，无需安装额外依赖；Windows 上如无 `python3`，请使用 `python` 或 `py -3`）
-- **`CANVASMIND_AGENT_GATEWAY_API_KEY`** 环境变量已设置
+- **`BAOLIANGXIA_AGENT_GATEWAY_API_KEY`** 环境变量已设置
 
 ### 查看模型目录
 
@@ -168,7 +170,7 @@ python3 skills/baoliangxia-skills/scripts/query_generation.py <GENERATION_ID>
 
 # 轮询直到结束，并把结果下载到指定目录
 python3 skills/baoliangxia-skills/scripts/query_generation.py <GENERATION_ID> --wait \
-  --output-dir ./canvasmind_results/<GENERATION_ID>
+  --output-dir ./baoliangxia_results/<GENERATION_ID>
 ```
 
 `pending` / `running` 为中间状态，`completed` / `failed` / `stopped` 为终态，只有 `completed` 表示成功。
@@ -192,6 +194,8 @@ baoliangxia-skills/
             ├── _models.py                  # 模型目录与参数约束
             ├── _generation.py              # 生成请求公共逻辑
             ├── create_model_generation.py  # 统一创建入口（--model）
+            ├── create_batch_generations.py # 批量并发 / 数量补缺 / 统一等待下载
+            ├── _batch.py                   # 批量调度与提交前任务存档
             ├── upload_file.py              # 上传图片 / 视频 / 音频素材
             ├── query_generation.py         # 查询进度 / 等待 / 下载结果
             └── create_*.py                 # 按模型/类型的便捷入口（兼容旧用法）
@@ -204,7 +208,7 @@ baoliangxia-skills/
 所有 API 请求通过 HTTP Header 进行 Bearer Token 鉴权：
 
 ```
-Authorization: Bearer <CANVASMIND_AGENT_GATEWAY_API_KEY>
+Authorization: Bearer <BAOLIANGXIA_AGENT_GATEWAY_API_KEY>
 ```
 
 ### 接口列表

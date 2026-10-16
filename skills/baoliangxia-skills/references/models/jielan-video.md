@@ -1,6 +1,6 @@
 # Jielan video family
 
-The upstream document names this family `zl-video`, `zl-video-lite`, and `zl-video-mini`. CanvasMind requests must use `jielan-video`, `jielan-video-lite`, or `jielan-video-mini` respectively.
+The upstream document names this family `zl-video`, `zl-video-lite`, and `zl-video-mini`. baoliangxia requests must use `jielan-video`, `jielan-video-lite`, or `jielan-video-mini` respectively.
 
 ## Script
 
@@ -29,5 +29,5 @@ python3 {baseDir}/scripts/create_model_generation.py "生成竖屏商品视频" 
 
 ## 不可用能力
 
-The Gateway does not expose `generate_audio`, return-last-frame, watermark, seed, or callback controls. Do not send the upstream `zl-video*` names as CanvasMind model identifiers.
+The Gateway does not expose `generate_audio`, return-last-frame, watermark, seed, or callback controls. Do not send the upstream `zl-video*` names as baoliangxia model identifiers.
 

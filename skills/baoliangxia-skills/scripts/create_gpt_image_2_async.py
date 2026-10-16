@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create the Image 2 async task using its CanvasMind database model identifier."""
+"""Create the Image 2 async task using its baoliangxia database model identifier."""
 
 import argparse
 

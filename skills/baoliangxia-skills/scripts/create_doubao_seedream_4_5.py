@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a doubao-seedream-4.5 image through CanvasMind Agent Gateway."""
+"""Create a doubao-seedream-4.5 image through baoliangxia Agent Gateway."""
 
 import argparse
 

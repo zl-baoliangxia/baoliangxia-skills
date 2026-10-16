@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a wan3.0-video generation through CanvasMind Agent Gateway."""
+"""Create a wan3.0-video generation through baoliangxia Agent Gateway."""
 
 import argparse
 

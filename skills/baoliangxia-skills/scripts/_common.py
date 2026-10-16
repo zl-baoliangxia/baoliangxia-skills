@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Shared HTTP helpers for the CanvasMind Agent Gateway scripts."""
+"""Shared HTTP helpers for the baoliangxia Agent Gateway scripts."""
 
 from __future__ import annotations
 
@@ -16,20 +16,26 @@ from typing import Any, Iterable
 
 
 DEFAULT_BASE_URL = "https://baoliangxia.com/"
-API_KEY_ENV = "CANVASMIND_AGENT_GATEWAY_API_KEY"
-BASE_URL_ENV = "CANVASMIND_AGENT_GATEWAY_BASE_URL"
+API_KEY_ENV = "BAOLIANGXIA_AGENT_GATEWAY_API_KEY"
+BASE_URL_ENV = "BAOLIANGXIA_AGENT_GATEWAY_BASE_URL"
+# 旧版变量名，仅作兼容回退，避免已配置旧变量的用户升级后失效
+LEGACY_API_KEY_ENV = "CANVASMIND_AGENT_GATEWAY_API_KEY"
+LEGACY_BASE_URL_ENV = "CANVASMIND_AGENT_GATEWAY_BASE_URL"
 
 
 class GatewayError(RuntimeError):
-    pass
+    def __init__(self, message: str, *, status=None, retry_after=None):
+        super().__init__(message)
+        self.status = status
+        self.retry_after = retry_after
 
 
 def base_url(value: str | None) -> str:
-    return (value or os.environ.get(BASE_URL_ENV) or DEFAULT_BASE_URL).rstrip("/")
+    return (value or os.environ.get(BASE_URL_ENV) or os.environ.get(LEGACY_BASE_URL_ENV) or DEFAULT_BASE_URL).rstrip("/")
 
 
 def api_key() -> str:
-    value = os.environ.get(API_KEY_ENV, "").strip()
+    value = (os.environ.get(API_KEY_ENV) or os.environ.get(LEGACY_API_KEY_ENV) or "").strip()
     if not value:
         raise GatewayError(f"Missing environment variable: {API_KEY_ENV}")
     return value
@@ -65,12 +71,19 @@ def request_json(
     except urllib.error.HTTPError as exc:
         raw = exc.read()
         detail = raw.decode("utf-8", errors="replace")
+        retry_after = exc.headers.get('Retry-After')
         try:
             parsed = json.loads(detail)
             detail = json.dumps(parsed, ensure_ascii=False)
+            if isinstance(parsed, dict) and isinstance(parsed.get('error'), dict):
+                retry_after = retry_after or parsed['error'].get('retryAfterSeconds')
         except json.JSONDecodeError:
             pass
-        raise GatewayError(f"HTTP {exc.code} from {url}: {detail}") from exc
+        try:
+            retry_after = max(1, float(retry_after)) if retry_after is not None else None
+        except (TypeError, ValueError):
+            retry_after = None
+        raise GatewayError(f"HTTP {exc.code} from {url}: {detail}", status=exc.code, retry_after=retry_after) from exc
     except urllib.error.URLError as exc:
         raise GatewayError(f"Request failed for {url}: {exc.reason}") from exc
 
@@ -114,7 +127,7 @@ def upload_ref(upload_id: str) -> dict[str, str]:
 
 
 def encode_multipart(fields: dict[str, Any], file_path: Path, mime_type: str) -> tuple[bytes, str]:
-    boundary = f"----canvasmind-{uuid.uuid4().hex}"
+    boundary = f"----baoliangxia-{uuid.uuid4().hex}"
     chunks: list[bytes] = []
     for name, value in fields.items():
         chunks.extend(
@@ -203,7 +216,7 @@ def download_outputs(urls: Iterable[str], output_dir: Path) -> list[str]:
     output_dir.mkdir(parents=True, exist_ok=True)
     downloaded: list[str] = []
     for index, url in enumerate(urls, 1):
-        request = urllib.request.Request(url, headers={"User-Agent": "canvasmind-skill/1"})
+        request = urllib.request.Request(url, headers={"User-Agent": "baoliangxia-skill/1"})
         try:
             with urllib.request.urlopen(request, timeout=300) as response:
                 data = response.read()

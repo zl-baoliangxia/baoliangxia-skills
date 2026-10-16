@@ -31,6 +31,6 @@ python3 {baseDir}/scripts/create_model_generation.py "生成竖版商品海报" 
 
 ## 不可用能力
 
-The current Agent Gateway contract does not expose group-image mode, streaming, `response_format`, `watermark`, prompt optimization, or web search.
+The Gateway translates `n` to the group-image limit and, when n is explicit, selects `auto` for multiple images or `disabled` for one. Actual output count may be lower than n. For multiple images, use `create_batch_generations.py --count N` to wait and request only the remaining count. Reference slots reduce the per-request limit. Raw group-image controls, streaming, `response_format`, `watermark`, prompt optimization, and web search are not exposed.
 
 Do not send `outputFormat`: the source document marks `output_format` as a `doubao-seedream-5.0-lite`-only field.
