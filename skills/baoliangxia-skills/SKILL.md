@@ -23,12 +23,24 @@ Use the bundled Python scripts to call baoliangxia-skills. Preserve the user's p
 
 ## First-use guidance
 
-When a user asks how to use this skill, give this concise onboarding response in order before discussing advanced model options:
+Give this concise onboarding response in order, before discussing advanced model options, when the user is using this skill for the first time or asks how to use it:
 
 1. If the skill is not already available to their Agent, offer to install the skill into their Agent. Ask permission before installing it, then follow the "Install or update with the skills CLI" steps in the Installation section.
 2. The Agent, not the user, checks whether Python is available after installation. Explain that Python 3 is required. If it is unavailable, offer to install Python after obtaining approval, then verify it before proceeding.
-3. Explain that generations require `BAOLIANGXIA_AGENT_GATEWAY_API_KEY` as an environment variable. Let the user either configure it themselves or provide their key for the AI to configure. If they provide a key, treat it as a secret: use it only for that configuration, never echo or repeat it, and never put it in project files, source control, prompts, or logs. Subsequent scripts must read the key from the environment variable.
+3. If `BAOLIANGXIA_AGENT_GATEWAY_API_KEY` is not configured, or the user asks where to get a key, give the create-key steps below before any generation. Then explain that the key must be set as that environment variable. Let the user either configure it themselves or provide their key for the AI to configure. If they provide a key, treat it as a secret: use it only for that configuration, never echo or repeat it, and never put it in project files, source control, prompts, or logs. Subsequent scripts must read the key from the environment variable.
 4. Once the skill, Python, and key are ready, tell the user to send a plain-language request in the Agent. State that images default to `doubao-seedream-4.5` and videos default to `doubao-seedance-2.0` when no model is requested. The Agent handles generation, waiting, downloading, and presenting the result.
+
+### Create a key
+
+When the user has no key yet, include these steps in the user-facing reply. Do not replace them with a generic "set an API key" line, and do not send the user anywhere except `https://baoliangxia.com/`.
+
+1. Open the 爆量匣 platform at https://baoliangxia.com/.
+2. Register an account, or log in if they already have one.
+3. Click the avatar at the bottom left.
+4. Open the API/CLI page.
+5. Create their own key.
+
+The same steps apply on their own when a later request finds `BAOLIANGXIA_AGENT_GATEWAY_API_KEY` unset. Stop before submitting a generation and give this path again. Skip the install and Python steps when those are already done.
 
 ### Agent-native examples
 
@@ -36,11 +48,11 @@ When a user asks how to use this skill, give this concise onboarding response in
 - “用 baoliangxia-skills 生成一段 5 秒的产品广告视频。”
 - “把这张图片作为参考，生成一张同风格的海报。”
 
-Keep the user-facing response focused on what to do in the Agent. Do not include terminal instructions or implementation details unless the user specifically asks for them.
+Keep the user-facing response focused on what to do in the Agent. Do not include terminal instructions or implementation details unless the user specifically asks for them. The create-key steps are required in that reply whenever the user has no key; they are not implementation details.
 
 ## Authentication
 
-For generation requests, read the API key from `BAOLIANGXIA_AGENT_GATEWAY_API_KEY`. Never place it in commands, files, prompts, or logs. The sole exception is a user explicitly providing their key to authorize the AI to configure this environment variable; handle that key using the first-use guidance above.
+For generation requests, read the API key from `BAOLIANGXIA_AGENT_GATEWAY_API_KEY`. Never place it in commands, files, prompts, or logs. The sole exception is a user explicitly providing their key to authorize the AI to configure this environment variable; handle that key using the first-use guidance above. If the variable is unset, or the user says they do not have a key, stop and follow "Create a key" above.
 
 The default service URL is `https://baoliangxia.com/`. Override it with `BAOLIANGXIA_AGENT_GATEWAY_BASE_URL` or `--base-url` only when the user supplies another deployment.
 
@@ -211,6 +223,7 @@ For an uncertain retry of the same logical request, reuse the returned `idempote
 | Passing a control the Gateway cannot express | Stop and report the unavailable capability |
 | Copying a sample ratio or resolution when the user did not ask for one | Omit `--aspect-ratio` and `--resolution` and let the script apply the model default |
 | Loading every model reference | Load only the selected row's reference |
+| Telling a first-time user, or a user with no key, only to set an environment variable | Send them to https://baoliangxia.com/ to register or log in, then bottom-left avatar → API/CLI → create their own key |
 
 ## Installation
 
