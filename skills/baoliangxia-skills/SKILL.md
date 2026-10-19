@@ -229,7 +229,7 @@ For an uncertain retry of the same logical request, reuse the returned `idempote
 
 Install `SKILL.md`, `scripts/`, and `references/`. Do not install `.env`, cache directories, or credentials.
 
-### Install or update with the skills CLI
+### Install or update with the skills CLI 
 
 The skill is published at `https://github.com/zlhub-baoliangxia/baoliangxia-skills`. Ask the user for permission before installing or updating, then run one of these commands. Node.js (for `npx`) must be available.
 

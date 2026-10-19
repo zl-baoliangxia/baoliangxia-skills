@@ -21,7 +21,7 @@
 
 通过 `npx skills` 一键安装技能到你的项目中：
 
-```bash
+```bash 
 # 交互式选择要安装的技能
 npx skills add zlhub-baoliangxia/baoliangxia-skills
 
