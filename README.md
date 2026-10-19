@@ -56,7 +56,15 @@ npx skills ls -g
 
 ### ⚙️ 配置 API Key
 
-安装完成后，设置环境变量即可使用：
+还没有 Key 时，先在爆量匣平台创建：
+
+1. 打开 [爆量匣](https://baoliangxia.com/)。
+2. 注册账号，或登录已有账号。
+3. 点击左下角头像。
+4. 打开 API/CLI 页面。
+5. 创建自己的 Key。
+
+创建完成后，把 Key 设置为环境变量即可使用：
 
 ```bash
 # macOS / Linux
