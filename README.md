@@ -23,16 +23,16 @@
 
 ```bash
 # 交互式选择要安装的技能
-npx skills add zl-baoliangxia/baoliangxia-skills
+npx skills add zlhub-baoliangxia/baoliangxia-skills
 
 # 直接安装指定技能
-npx skills add zl-baoliangxia/baoliangxia-skills --skill baoliangxia-skills
+npx skills add zlhub-baoliangxia/baoliangxia-skills --skill baoliangxia-skills
 ```
 
 默认安装到当前项目。如需安装到用户级（所有项目共用），加上 `-g`，并用 `-a` 指定 Agent，例如 Codex：
 
 ```bash
-npx skills add zl-baoliangxia/baoliangxia-skills --skill baoliangxia-skills -g -a codex -y
+npx skills add zlhub-baoliangxia/baoliangxia-skills --skill baoliangxia-skills -g -a codex -y
 ```
 
 ### 🔄 更新技能

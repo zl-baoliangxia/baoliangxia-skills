@@ -231,11 +231,11 @@ Install `SKILL.md`, `scripts/`, and `references/`. Do not install `.env`, cache 
 
 ### Install or update with the skills CLI
 
-The skill is published at `https://github.com/zl-baoliangxia/baoliangxia-skills`. Ask the user for permission before installing or updating, then run one of these commands. Node.js (for `npx`) must be available.
+The skill is published at `https://github.com/zlhub-baoliangxia/baoliangxia-skills`. Ask the user for permission before installing or updating, then run one of these commands. Node.js (for `npx`) must be available.
 
 ```bash
 # Install (user-level, for Codex)
-npx skills add zl-baoliangxia/baoliangxia-skills --skill baoliangxia-skills -g -a codex -y
+npx skills add zlhub-baoliangxia/baoliangxia-skills --skill baoliangxia-skills -g -a codex -y
 
 # Update an installed copy to the latest version
 npx skills update baoliangxia-skills -g -y
