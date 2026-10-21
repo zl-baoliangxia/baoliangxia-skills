@@ -21,7 +21,9 @@ Omitted `--aspect-ratio` becomes `adaptive`. Omitted `--resolution` becomes uppe
 | Primary image | `--image-upload-id ID` | General driving image |
 | Reference images | repeat `--reference-image-id ID` | At most 10 |
 | Reference videos | repeat `--reference-video-id ID` | At most 5; total source duration ≤15 seconds |
-| Reference audio | `--audio-upload-id ID` | One uploaded reference audio; total source duration ≤15 seconds |
+| Reference audio | repeat `--reference-audio-id ID` | Up to 5 audio uploads; legacy `--audio-upload-id` remains supported for one |
+| Generated audio | `--option audio=true|false` | Defaults to `true`; controls generated sound, not reference audio |
+| Watermark | `--watermark true|false` | Defaults to `false` |
 
 When video input is present, input duration plus requested output duration must not exceed 30 seconds.
 
@@ -33,5 +35,5 @@ python3 {baseDir}/scripts/create_model_generation.py "参考运镜生成广告" 
 
 ## 不可用能力
 
-The Gateway cannot select explicit first/last-frame roles, output-audio mode, seed, watermark, callback URL, provider `file`, or provider `link`.
+The Gateway exposes generated audio and watermark through the listed options. Explicit first/last-frame roles, seed, callback URL, provider `file`, and provider `link` remain unavailable.
 

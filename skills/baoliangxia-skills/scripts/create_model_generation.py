@@ -25,6 +25,9 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--reference-image-id", action="append", default=[])
     parser.add_argument("--reference-video-id", action="append", default=[])
     parser.add_argument("--audio-upload-id")
+    parser.add_argument("--reference-audio-id", action="append", default=[])
+    parser.add_argument("--option", action="append", default=[], metavar="KEY=VALUE")
+    parser.add_argument("--watermark", choices=("true", "false"), help="Gateway watermark option")
     parser.add_argument(
         "--dry-run", action="store_true",
         help="Validate arguments and print the endpoint/payload without authentication or network access",
@@ -92,8 +95,50 @@ def validate_common(args: argparse.Namespace, spec: ModelSpec) -> None:
         video_images.insert(0, args.image_upload_id)
     require_count("video image inputs", video_images, spec.max_reference_images)
     require_count("--reference-video-id", args.reference_video_id, spec.max_reference_videos)
+    require_count("--reference-audio-id", args.reference_audio_id, spec.max_reference_audios)
+    if args.audio_upload_id and args.reference_audio_id:
+        raise ValueError("--audio-upload-id and --reference-audio-id cannot be used together")
     if args.audio_upload_id and not spec.allow_audio:
         raise ValueError("--audio-upload-id is not exposed for this model by Agent Gateway")
+    if args.reference_audio_id and not spec.allow_audio:
+        raise ValueError("--reference-audio-id is not exposed for this model by Agent Gateway")
+
+    options = dict(spec.gateway_option_defaults or {})
+    explicit = {}
+    for item in args.option:
+        if "=" not in item:
+            raise ValueError("--option must use KEY=VALUE")
+        key, value = item.split("=", 1)
+        if key in explicit:
+            raise ValueError(f"duplicate --option key: {key}")
+        explicit[key] = value
+    if args.watermark is not None:
+        if "watermark" in explicit:
+            raise ValueError("--watermark cannot be combined with --option watermark=...")
+        explicit["watermark"] = args.watermark
+    allowed = spec.gateway_options or {}
+    for key, value in explicit.items():
+        if key not in allowed:
+            raise ValueError(f"option {key!r} is not exposed for this model by Agent Gateway")
+        choices = allowed[key]
+        if choices is None:
+            if value not in {"true", "false"}:
+                raise ValueError(f"option {key} must be true or false")
+            options[key] = value == "true"
+        else:
+            if value not in choices:
+                raise ValueError(f"option {key} must be one of: {', '.join(choices)}")
+            options[key] = value
+    if args.model == "doubao-seedance-2.5":
+        has_media = bool(args.image_upload_id or args.reference_image_id or args.reference_video_id or args.reference_audio_id or args.audio_upload_id)
+        task_type = options.get("omni_reference_task_type")
+        if task_type in {"edit", "extend"} and not args.reference_video_id:
+            raise ValueError("omni_reference_task_type=edit/extend requires --reference-video-id")
+        if has_media:
+            options.setdefault("omni_reference_task_type", "reference")
+        else:
+            options.pop("omni_reference_task_type", None)
+    args.gateway_options = options
 
     if spec.kind == "images" and (
         args.image_upload_id or args.reference_image_id or args.reference_video_id or args.audio_upload_id
@@ -107,7 +152,7 @@ def validate_common(args: argparse.Namespace, spec: ModelSpec) -> None:
         if len(args.input_upload_id) + output_count > 15:
             raise ValueError("reference image count + output image count must be at most 15")
 
-    if args.model == "MiniMax-H3" and not video_images and not args.reference_video_id and not args.audio_upload_id:
+    if args.model == "MiniMax-H3" and not video_images and not args.reference_video_id and not args.audio_upload_id and not args.reference_audio_id:
         if not args.aspect_ratio or args.aspect_ratio == "adaptive":
             raise ValueError("MiniMax-H3 text-to-video requires an explicit non-adaptive --aspect-ratio")
 
@@ -118,6 +163,7 @@ def apply_model_defaults(args: argparse.Namespace, spec: ModelSpec) -> None:
         or args.reference_image_id
         or args.reference_video_id
         or args.input_upload_id
+        or args.reference_audio_id
     )
     if not args.aspect_ratio and not (spec.omit_default_ratio_with_media and has_media):
         media_ratio = spec.default_ratio_with_media if has_media else None
@@ -135,6 +181,8 @@ def build_payload(args: argparse.Namespace, spec: ModelSpec) -> dict:
         append_if_present(payload, "n", args.n)
         append_if_present(payload, "outputFormat", args.output_format)
         append_if_present(payload, "inputImages", upload_refs(args.input_upload_id))
+        if args.gateway_options:
+            payload["options"] = args.gateway_options
         return payload
 
     append_if_present(payload, "duration", args.duration)
@@ -144,6 +192,10 @@ def build_payload(args: argparse.Namespace, spec: ModelSpec) -> dict:
     append_if_present(payload, "referenceVideos", upload_refs(args.reference_video_id))
     if args.audio_upload_id:
         payload["audio"] = upload_ref(args.audio_upload_id)
+    if args.reference_audio_id:
+        payload["referenceAudios"] = upload_refs(args.reference_audio_id)
+    if args.gateway_options:
+        payload["options"] = args.gateway_options
     return payload
 
 

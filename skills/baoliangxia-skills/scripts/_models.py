@@ -22,6 +22,9 @@ class ModelSpec:
     max_input_images: int | None = None
     max_reference_images: int | None = None
     max_reference_videos: int | None = None
+    max_reference_audios: int | None = None
+    gateway_options: dict[str, tuple[str, ...] | None] | None = None
+    gateway_option_defaults: dict[str, str | bool] | None = None
     allow_audio: bool = False
     unavailable_reason: str | None = None
     # Applied only when the caller omits the flag. A value stated in the model
@@ -46,44 +49,73 @@ MODELS: dict[str, ModelSpec] = {
         "images", "references/models/doubao-seedream-4.5.md",
         ratios=IMAGE_RATIOS, resolutions=("2K", "4K"), max_outputs=15, max_input_images=14,
         default_ratio="1:1", default_resolution="2K",
+        gateway_options={"watermark": None}, gateway_option_defaults={"watermark": False},
     ),
     "doubao-seedream-5.0-lite": ModelSpec(
         "images", "references/models/doubao-seedream-5.0-lite.md",
         ratios=IMAGE_RATIOS, resolutions=("2K", "3K", "4K"), max_outputs=15,
         output_formats=("png", "jpeg"), max_input_images=14,
         default_ratio="1:1", default_resolution="2K",
+        gateway_options={"watermark": None}, gateway_option_defaults={"watermark": False},
     ),
     "doubao-seedream-5.0-pro": ModelSpec(
         "images", "references/models/doubao-seedream-5.0-pro.md",
         ratios=IMAGE_RATIOS, resolutions=("1K", "2K"), output_formats=("png", "jpeg"),
         max_input_images=10, default_ratio="1:1", default_resolution="2K",
-    ),
-    "zl-ooe-3.1-flash-image": ModelSpec(
-        "images", "references/models/zl-ooe-3.1-flash-image.md",
-        ratios=("1:1", "3:4", "4:3", "16:9", "9:16", "21:9", "3:2", "2:3", "5:4", "4:5"),
-        max_input_images=3, default_ratio="16:9",
+        gateway_options={"watermark": None}, gateway_option_defaults={"watermark": False},
     ),
     "zl-pep-image-2-async": ModelSpec(
         "images", "references/models/zl-pep-image-2.md",
         ratios=IMAGE_2_RATIOS, resolutions=("1K", "2K", "4K"), max_outputs=10,
         max_input_images=3, default_ratio="16:9", default_resolution="1K",
+        gateway_options={"quality": ("auto", "low", "medium", "high"), "background": ("auto", "opaque")},
+        gateway_option_defaults={"quality": "auto", "background": "auto"},
+    ),
+    "zl-pep-image-2.5-flare-async": ModelSpec(
+        "images", "references/models/zl-pep-image-2.md",
+        ratios=IMAGE_2_RATIOS, resolutions=("1K", "2K", "4K"),
+        max_input_images=3, default_ratio="16:9", default_resolution="1K",
+        gateway_options={"quality": ("auto", "low", "medium", "high"), "background": ("auto", "opaque")},
+        gateway_option_defaults={"quality": "auto", "background": "auto"},
+    ),
+    "zl-pep-image-2.5-sunburst-async": ModelSpec(
+        "images", "references/models/zl-pep-image-2.md",
+        ratios=IMAGE_2_RATIOS, resolutions=("1K", "2K", "4K"),
+        max_input_images=3, default_ratio="16:9", default_resolution="1K",
+        gateway_options={"quality": ("auto", "low", "medium", "high"), "background": ("auto", "opaque")},
+        gateway_option_defaults={"quality": "auto", "background": "auto"},
+    ),
+    "zl-ooe-3.1-flash-image-t": ModelSpec(
+        "images", "references/models/zl-ooe-3.1-flash-image.md",
+        ratios=("1:1", "3:4", "4:3", "16:9", "9:16", "21:9", "3:2", "2:3", "5:4", "4:5"),
+        max_input_images=3, default_ratio="16:9",
+        gateway_options={"imageSize": ("1K", "2K", "4K")}, gateway_option_defaults={"imageSize": "2K"},
     ),
     "doubao-seedance-2.0": ModelSpec(
         "videos", "references/models/doubao-seedance-2.0.md",
         ratios=VIDEO_RATIOS, resolutions=("480p", "720p", "1080p"), duration_min=1,
         max_reference_images=30, max_reference_videos=10, allow_audio=True,
+        max_reference_audios=1,
+        gateway_options={"generate_audio": None, "watermark": None},
+        gateway_option_defaults={"generate_audio": True, "watermark": False},
         default_ratio="16:9", default_resolution="720p",
     ),
     "doubao-seedance-2.0-fast": ModelSpec(
         "videos", "references/models/doubao-seedance-2.0.md",
         ratios=VIDEO_RATIOS, resolutions=("480p", "720p"), duration_min=1,
         max_reference_images=30, max_reference_videos=10, allow_audio=True,
+        max_reference_audios=1,
+        gateway_options={"generate_audio": None, "watermark": None},
+        gateway_option_defaults={"generate_audio": True, "watermark": False},
         default_ratio="16:9", default_resolution="720p",
     ),
     "doubao-seedance-2.0-mini": ModelSpec(
         "videos", "references/models/doubao-seedance-2.0.md",
         ratios=VIDEO_RATIOS, resolutions=("480p", "720p"), duration_min=1,
         max_reference_images=30, max_reference_videos=10, allow_audio=True,
+        max_reference_audios=1,
+        gateway_options={"generate_audio": None, "watermark": None},
+        gateway_option_defaults={"generate_audio": True, "watermark": False},
         default_ratio="16:9", default_resolution="720p",
     ),
     "doubao-seedance-2.5": ModelSpec(
@@ -91,6 +123,9 @@ MODELS: dict[str, ModelSpec] = {
         ratios=VIDEO_RATIOS + ("adaptive",), resolutions=("480p", "720p", "1080p"),
         duration_min=4, duration_max=30, allow_adaptive_duration=True,
         max_reference_images=30, max_reference_videos=10, allow_audio=True,
+        max_reference_audios=10,
+        gateway_options={"generate_audio": None, "omni_reference_task_type": ("reference", "edit", "extend"), "watermark": None},
+        gateway_option_defaults={"generate_audio": True, "watermark": False},
         default_ratio="adaptive", default_resolution="720p",
     ),
     "happyhorse-1.1": ModelSpec(
@@ -103,30 +138,43 @@ MODELS: dict[str, ModelSpec] = {
         "videos", "references/models/jielan-video.md",
         ratios=VIDEO_RATIOS, resolutions=("720p", "1080p", "2k", "4k"), duration_min=1,
         max_reference_images=30, max_reference_videos=10, allow_audio=True,
+        max_reference_audios=1,
+        gateway_options={"generate_audio": None, "watermark": None},
+        gateway_option_defaults={"generate_audio": True, "watermark": False},
         default_ratio="16:9", default_resolution="720p",
     ),
     "jielan-video-lite": ModelSpec(
         "videos", "references/models/jielan-video.md",
         ratios=VIDEO_RATIOS, resolutions=("720p", "1080p"), duration_min=1,
         max_reference_images=30, max_reference_videos=10, allow_audio=True,
+        max_reference_audios=1,
+        gateway_options={"generate_audio": None, "watermark": None},
+        gateway_option_defaults={"generate_audio": True, "watermark": False},
         default_ratio="16:9", default_resolution="720p",
     ),
     "jielan-video-mini": ModelSpec(
         "videos", "references/models/jielan-video.md",
         ratios=VIDEO_RATIOS, resolutions=("720p", "1080p"), duration_min=1,
         max_reference_images=30, max_reference_videos=10, allow_audio=True,
+        max_reference_audios=1,
+        gateway_options={"generate_audio": None, "watermark": None},
+        gateway_option_defaults={"generate_audio": True, "watermark": False},
         default_ratio="16:9", default_resolution="720p",
     ),
     "kling-v3-omni": ModelSpec(
         "videos", "references/models/kling-v3-omni.md",
         ratios=("9:16", "16:9", "1:1"), duration_min=3, duration_max=15,
         max_reference_images=7, max_reference_videos=7, default_ratio="16:9",
+        gateway_options={"mode": ("std", "pro", "4k"), "sound": ("on", "off"), "watermark": None},
+        gateway_option_defaults={"mode": "pro", "sound": "off", "watermark": False},
     ),
     "MiniMax-H3": ModelSpec(
         "videos", "references/models/minimax-h3.md",
         ratios=("adaptive", "9:16", "16:9", "4:3", "3:4", "1:1", "21:9"),
         resolutions=("768P", "2K"), duration_min=4, duration_max=15, duration_required=True,
         max_reference_images=30, max_reference_videos=10, allow_audio=True,
+        max_reference_audios=3,
+        gateway_options={"watermark": None}, gateway_option_defaults={"watermark": False},
         default_ratio="16:9", default_resolution="768P", default_ratio_with_media="adaptive",
     ),
     "video-sr": ModelSpec(
@@ -171,17 +219,21 @@ MODELS: dict[str, ModelSpec] = {
         resolutions=("480P", "720P", "1080P"), duration_min=2, duration_max=30,
         allow_adaptive_duration=True, max_reference_images=10, max_reference_videos=5,
         allow_audio=True, default_ratio="adaptive", default_resolution="1080P",
+        max_reference_audios=5, gateway_options={"audio": None, "watermark": None},
+        gateway_option_defaults={"audio": True, "watermark": False},
     ),
     "wan3.0-video-prime": ModelSpec(
         "videos", "references/models/wan3.0-video.md", ratios=WAN_RATIOS,
         resolutions=("480P", "720P", "1080P"), duration_min=2, duration_max=30,
         allow_adaptive_duration=True, max_reference_images=10, max_reference_videos=5,
         allow_audio=True, default_ratio="adaptive", default_resolution="1080P",
+        max_reference_audios=5, gateway_options={"audio": None, "watermark": None},
+        gateway_option_defaults={"audio": True, "watermark": False},
     ),
 }
 
 
-def catalog_rows() -> list[dict[str, str | bool | int | None]]:
+def catalog_rows() -> list[dict[str, object]]:
     return [
         {
             "model": model,
@@ -192,6 +244,14 @@ def catalog_rows() -> list[dict[str, str | bool | int | None]]:
             "defaultResolution": spec.default_resolution,
             "supportsOutputCount": spec.max_outputs is not None,
             "maxOutputsPerRequest": spec.max_outputs or 1,
+            "supportsReferenceAudio": spec.max_reference_audios is not None,
+            "maxReferenceAudios": spec.max_reference_audios or 0,
+            "gatewayOptions": {
+                key: {"type": "boolean" if choices is None else "enum",
+                      "choices": list(choices or ()),
+                      "default": (spec.gateway_option_defaults or {}).get(key)}
+                for key, choices in (spec.gateway_options or {}).items()
+            },
             "batchStrategy": "count_then_top_up" if spec.max_outputs else "parallel_single",
         }
         for model, spec in MODELS.items()

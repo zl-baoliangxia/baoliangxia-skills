@@ -20,7 +20,8 @@ Omitted `--resolution` becomes `768P`. The document requires a resolution and do
 | Resolution | `--resolution VALUE` | Exact `768P` or `2K` |
 | Primary/reference images | image flags | Upload first |
 | Reference videos | repeat `--reference-video-id ID` | Total ≤15 seconds |
-| Reference audio | `--audio-upload-id ID` | Requires compatible visual input |
+| Reference audio | repeat `--reference-audio-id ID` | Up to 3 audio uploads; legacy `--audio-upload-id` remains supported for one |
+| Watermark | `--watermark true|false` | Defaults to `false` |
 
 ```bash
 python3 {baseDir}/scripts/create_model_generation.py "电影感城市延时摄影" \
@@ -29,5 +30,5 @@ python3 {baseDir}/scripts/create_model_generation.py "电影感城市延时摄�
 
 ## 不可用能力
 
-The upstream supports explicit first/last-frame roles, but the Gateway cannot transmit image roles. Negative prompt, callback URL, and raw `content` items are also unavailable.
+The Gateway exposes watermark control. The upstream supports explicit first/last-frame roles, but the Gateway cannot transmit image roles. Negative prompt, callback URL, and raw `content` items are also unavailable.
 

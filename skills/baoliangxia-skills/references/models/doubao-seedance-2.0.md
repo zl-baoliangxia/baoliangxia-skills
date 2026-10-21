@@ -21,7 +21,9 @@ Omitted `--aspect-ratio` becomes `16:9`. Omitted `--resolution` becomes `720p` f
 | Primary image | `--image-upload-id ID` | General driving image; not an explicit frame role |
 | Reference images | repeat `--reference-image-id ID` | Upload first |
 | Reference videos | repeat `--reference-video-id ID` | Upload first; total source duration ≤15 seconds |
-| Reference audio | `--audio-upload-id ID` | Requires at least one image or video |
+| Reference audio | `--reference-audio-id ID` | One upload; requires at least one image or video. Legacy `--audio-upload-id` remains supported |
+| Generated audio | `--option generate_audio=true|false` | Defaults to `true`; controls generated sound |
+| Watermark | `--watermark true|false` | Defaults to `false` |
 
 ```bash
 python3 {baseDir}/scripts/create_model_generation.py "产品缓慢旋转" \
@@ -31,5 +33,5 @@ python3 {baseDir}/scripts/create_model_generation.py "产品缓慢旋转" \
 
 ## 不可用能力
 
-The Gateway cannot select explicit first/last-frame roles, `generate_audio`, watermark, seed, callback URL, or the provider's extra tool fields. Do not emulate those fields through metadata.
+The Gateway exposes `generate_audio` and watermark through the listed options. Explicit first/last-frame roles, seed, callback URL, and the provider's extra tool fields remain unavailable. Do not emulate those fields through metadata.
 

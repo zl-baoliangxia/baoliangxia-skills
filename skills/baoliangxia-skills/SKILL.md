@@ -65,6 +65,8 @@ If the user does not name an aspect ratio, resolution, or clarity (清晰度), d
 Read only the selected row's reference. Shared family references are intentional. Submit the exact database identifier in the first column, even when the reference uses a different upstream name. In particular:
 
 - Image 2 async → `zl-pep-image-2-async`
+- Image 2.5 async → `zl-pep-image-2.5-flare-async` or `zl-pep-image-2.5-sunburst-async`
+- Nano Banana 3.1 Flash → `zl-ooe-3.1-flash-image-t`
 - 剧集带货 / Vidu Short Ads → `vidu-short_drama_ads_fast`
 
 Every available row uses `scripts/create_model_generation.py "PROMPT" --model MODEL [options]`. Run `--list-models` for the machine-readable catalog. Add `--dry-run` to validate and inspect the exact endpoint and payload without reading credentials or making a network request.
@@ -74,8 +76,10 @@ Every available row uses `scripts/create_model_generation.py "PROMPT" --model MO
 | `doubao-seedream-4.5` | `references/models/doubao-seedream-4.5.md` | available |
 | `doubao-seedream-5.0-lite` | `references/models/doubao-seedream-5.0-lite.md` | available |
 | `doubao-seedream-5.0-pro` | `references/models/doubao-seedream-5.0-pro.md` | available |
-| `zl-ooe-3.1-flash-image` | `references/models/zl-ooe-3.1-flash-image.md` | available |
+| `zl-ooe-3.1-flash-image-t` | `references/models/zl-ooe-3.1-flash-image.md` | available |
 | `zl-pep-image-2-async` | `references/models/zl-pep-image-2.md` | available |
+| `zl-pep-image-2.5-flare-async` | `references/models/zl-pep-image-2.md` | available |
+| `zl-pep-image-2.5-sunburst-async` | `references/models/zl-pep-image-2.md` | available |
 | `doubao-seedance-2.0` | `references/models/doubao-seedance-2.0.md` | available |
 | `doubao-seedance-2.0-fast` | `references/models/doubao-seedance-2.0.md` | available |
 | `doubao-seedance-2.0-mini` | `references/models/doubao-seedance-2.0.md` | available |
@@ -102,7 +106,8 @@ Do not substitute an upstream documentation name such as `gpt-image-2-async` or 
 
 1. Read the selected model reference.
 2. Upload every local reference asset with `scripts/upload_file.py FILE` and retain each `uploadId`.
-3. Translate user intent to flags using the reference's **参数拼装** table. Omit `--aspect-ratio` and `--resolution` when the user did not specify them, so the script can apply the model default. Omit every other optional flag the user did not request.
+3. Translate user intent to flags using the reference's **参数拼装** table. Omit `--aspect-ratio` and `--resolution` when the user did not specify them, so the script can apply the model default. The script also supplies declared Gateway option defaults; pass optional controls only when the user requests a different value.
+   For Gateway-exposed model controls, use repeatable `--option KEY=VALUE`; `--watermark true|false` is shorthand for the model's `watermark` option. Boolean options accept only lowercase `true` or `false`. Repeat `--reference-audio-id ID` for reference audio; do not combine it with legacy `--audio-upload-id`. Reference audio is source material, while options such as `audio=false` control generated sound.
 4. If the request appears under **不可用能力**, stop before submission. Do not silently drop it, approximate it with another field, or hide it in metadata.
 5. For multiple outputs or independent requests, use `scripts/create_batch_generations.py` as described below. For one output, run `scripts/create_model_generation.py` and retain `generationId` plus `idempotencyKey`.
 6. The batch script waits and downloads automatically. For a single task, run `scripts/query_generation.py GENERATION_ID --wait --output-dir OUTPUT_DIR`.
@@ -116,7 +121,7 @@ Use `create_batch_generations.py "PROMPT" --model MODEL --count N` for the same 
 
 | Effective model capability | Batch behavior |
 |---|---|
-| All available video models; `doubao-seedream-5.0-pro`; `zl-ooe-3.1-flash-image` | Submit N independent tasks concurrently without `n`, then poll them together. Default HTTP concurrency is 5, configurable up to 20. |
+| All available video models; `doubao-seedream-5.0-pro`; `zl-ooe-3.1-flash-image-t`; Image 2.5 async models | Submit N independent tasks concurrently without `n`, then poll them together. Default HTTP concurrency is 5, configurable up to 20. |
 | `doubao-seedream-4.5`, `doubao-seedream-5.0-lite` | One task at a time per prompt, `n=min(remaining, 15-reference_count)`; wait for completed, count actual outputs, then request only the shortfall. |
 | `zl-pep-image-2-async` | Same completion/count/top-up loop, at most 10 outputs per task. |
 

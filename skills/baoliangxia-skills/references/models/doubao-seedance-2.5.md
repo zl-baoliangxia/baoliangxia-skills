@@ -19,7 +19,10 @@ Omitted `--aspect-ratio` becomes `adaptive`, the documented default. Omitted `--
 | Primary image | `--image-upload-id ID` | General driving image |
 | Reference images | repeat `--reference-image-id ID` | At most 30 uploads |
 | Reference videos | repeat `--reference-video-id ID` | At most 10; total ≤30 seconds |
-| Reference audio | `--audio-upload-id ID` | Supported; total ≤30 seconds |
+| Reference audio | repeat `--reference-audio-id ID` | Up to 10 audio uploads; legacy `--audio-upload-id` remains supported for one |
+| Generated audio | `--option generate_audio=true|false` | Defaults to `true`; controls generated sound, not reference audio |
+| Reference task type | `--option omni_reference_task_type=reference|edit|extend` | Defaults to `reference` when media is attached; omit for text-only |
+| Watermark | `--watermark true|false` | Defaults to `false` |
 
 ```bash
 python3 {baseDir}/scripts/create_model_generation.py "扩展镜头并保持人物一致" \
@@ -29,5 +32,5 @@ python3 {baseDir}/scripts/create_model_generation.py "扩展镜头并保持人�
 
 ## 不可用能力
 
-The Gateway cannot explicitly choose `reference`/`edit`/`extend`, set `generate_audio`, assign first/last-frame roles, select MOV output, use web search, or send provider callback controls. For a request that depends on a specific task type, stop rather than infer it.
+The Gateway supports the listed task type and audio controls. First/last-frame roles, MOV output, web search, and provider callback controls remain unavailable. For an edit or extend task, pass its task type explicitly.
 

@@ -7,15 +7,16 @@ python3 {baseDir}/scripts/create_batch_generations.py "USER_PROMPT" \
   --model doubao-seedance-2.0 --count 5 --output-dir /absolute/path/new_batch
 ```
 
-图片同样使用 `--count`。Seedream4.5/Lite 每次上限 `15-参考图数`，Image2 async 每次上限10，均在完成后按实际张数补缺；Pro/Gemini 不传n，拆成单图任务并发。批量参数默认等待6小时，覆盖视频合法窗口；可以用 `--timeout` 自定义本地等待时限，但超时不等于服务端终态。
+图片同样使用 `--count`。Seedream4.5/Lite 每次上限 `15-参考图数`，Image 2 async 每次上限10，均在完成后按实际张数补缺；Pro、Image 2.5 async 和其他单输出模型不传n，拆成单图任务并发。批量参数默认等待6小时，覆盖视频合法窗口；可以用 `--timeout` 自定义本地等待时限，但超时不等于服务端终态。
 
-不同提示词、不同模型放入一个UTF-8 JSON文件；字段沿用脚本参数的下划线命名。公共 `--model` / prompt 不能与 `--jobs-file` 混用；其他生成参数也应写在每一项内。
+不同提示词、不同模型放入一个UTF-8 JSON文件；字段沿用脚本参数的下划线命名。公共 `--model` / prompt 不能与 `--jobs-file` 混用；其他生成参数也应写在每一项内。可用 `reference_audio_id` 字符串数组、`options` 对象和布尔 `watermark` 字段；旧单音频入口 `audio_upload_id` 仍可使用，但不能与 `reference_audio_id` 同时设置。
 
 ```json
 [
   {"model":"doubao-seedance-2.0","prompt":"第一个镜头的用户原文","count":1,"duration":5},
   {"model":"doubao-seedance-2.0","prompt":"第二个镜头的用户原文","count":1,"duration":5},
-  {"model":"doubao-seedream-4.5","prompt":"用户海报原文","count":5,"input_upload_id":["upl_product"]}
+  {"model":"doubao-seedream-4.5","prompt":"用户海报原文","count":5,"input_upload_id":["upl_product"],"watermark":true},
+  {"model":"wan3.0-video","prompt":"参考音频节奏的镜头","count":1,"reference_audio_id":["upl_a","upl_b"],"options":{"audio":false}}
 ]
 ```
 
@@ -26,7 +27,7 @@ python3 {baseDir}/scripts/create_batch_generations.py \
 
 所有任务先校验后提交，数量总和1–100。默认5个HTTP连接，`--concurrency 1..20` 可调整；所有初始任务提交阶段结束后集中查询，绝不等待一个视频完成才提交下一个。`--dry-run` 展示首轮请求，不读取密钥、建目录或联网。后续补图请求取决于实际输出，无法预先确定。不同提示词之间的补图各自独立。
 
-Gateway允许图片n，但模型组包可映射、锁定或删除字段。当前代码中Gemini适配器删除n；Pro数据库配置删除n。Seedream需要Gateway同时将组图模式设为auto；2026-10-16的配套服务端修改修复了旧配置disabled导致数量不生效的问题，使用旧服务端时可能每轮只返回一张，执行器仍按实际张数补齐。不得绕过网关传厂商原始组图字段。
+Gateway允许图片n，但模型组包可映射、锁定或删除字段。Pro和Image 2.5 async 没有多输出能力；Seedream需要Gateway同时将组图模式设为auto。使用旧服务端时可能每轮只返回一张，执行器仍按实际张数补齐。不得绕过网关传厂商原始组图字段。
 
 输出目录内 `batch.json` 保存每次请求、独立幂等键、任务ID、终态、实际输出及下载路径，不含API Key。这个文件在POST前落盘，结果逐步更新。已存在该文件的目录不能作为新批次使用，避免覆盖恢复依据。退出码0表示全部生成和下载成功；2表示部分完成、仍在运行、未完成或下载失败。
 

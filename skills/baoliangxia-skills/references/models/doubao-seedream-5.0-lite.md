@@ -37,4 +37,4 @@ python3 {baseDir}/scripts/create_model_generation.py "生成三张商品场景�
 
 The upstream model supports `tools: [{"type":"web_search"}]`, but the current Agent Gateway rejects that field. If web search is required, stop before submission and report the missing Gateway capability.
 
-Group-image mode, streaming, `response_format`, `watermark`, and prompt optimization are also not exposed. Do not place them in metadata.
+`--watermark true|false` controls watermark and defaults to `false`. Group-image mode, streaming, `response_format`, and prompt optimization are not exposed. Do not place them in metadata.

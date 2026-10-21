@@ -13,20 +13,24 @@ from create_model_generation import build_parser, parse_args, prepare_generation
 from _models import catalog_rows
 
 JOB_FIELDS = {'prompt', 'model', 'aspect_ratio', 'resolution', 'duration', 'output_format',
-              'input_upload_id', 'image_upload_id', 'reference_image_id', 'reference_video_id', 'audio_upload_id'}
+              'input_upload_id', 'image_upload_id', 'reference_image_id', 'reference_video_id', 'audio_upload_id',
+              'reference_audio_id', 'options', 'option', 'watermark'}
 
 
 def prepare_jobs(args):
     if args.n is not None or args.idempotency_key:
         raise ValueError('批量入口使用--count，不使用--n或共享的--idempotency-key；每个请求自动保存独立键')
     if args.jobs_file:
-        if args.count != 1 or any(getattr(args, key) for key in JOB_FIELDS):
+        if args.count != 1 or any(getattr(args, key, None) for key in JOB_FIELDS):
             raise ValueError('--jobs-file不能与公共生成参数混用；请在每项中填写完整参数')
         rows = json.loads(Path(args.jobs_file).read_text(encoding='utf-8-sig'))
         if not isinstance(rows, list) or not rows:
             raise ValueError('--jobs-file必须是非空JSON数组')
     else:
-        rows = [{**{key: getattr(args, key) for key in JOB_FIELDS}, 'count': args.count}]
+        rows = [{key: getattr(args, key, None) for key in JOB_FIELDS if getattr(args, key, None) is not None}]
+        rows[0]['option'] = args.option
+        rows[0]['reference_audio_id'] = args.reference_audio_id
+        rows[0]['count'] = args.count
     jobs = []
     for row in rows:
         if not isinstance(row, dict) or set(row) - (JOB_FIELDS | {'count'}):
@@ -38,15 +42,30 @@ def prepare_jobs(args):
         for key, value in row.items():
             if key == 'count':
                 continue
-            if key in {'input_upload_id', 'reference_image_id', 'reference_video_id'}:
+            if key in {'input_upload_id', 'reference_image_id', 'reference_video_id', 'reference_audio_id', 'option'}:
                 if not isinstance(value, list) or any(not isinstance(v, str) for v in value):
                     raise ValueError(f'{key}必须是字符串数组')
+            elif key == 'options':
+                if not isinstance(value, dict) or any(not isinstance(k, str) or not isinstance(v, (str, bool)) for k, v in value.items()):
+                    raise ValueError('options必须是字符串或布尔值组成的对象')
+                item_options = []
+                for option_key, option_value in value.items():
+                    item_options.append(f'{option_key}={str(option_value).lower() if isinstance(option_value, bool) else option_value}')
+                item.option = item_options
+            elif key == 'watermark':
+                if type(value) is bool:
+                    item.watermark = str(value).lower()
+                elif isinstance(value, str) and value in {'true', 'false'}:
+                    item.watermark = value
+                else:
+                    raise ValueError('watermark必须为布尔值')
             elif key == 'duration':
                 if value is not None and type(value) is not int:
                     raise ValueError('duration必须为整数')
             elif value is not None and not isinstance(value, str):
                 raise ValueError(f'{key}必须是字符串')
-            setattr(item, key, value)
+            if key not in {'options', 'watermark'}:
+                setattr(item, key, value)
         _spec, payload = prepare_generation(item)
         jobs.append({'model': item.model, 'count': count, 'payload': payload})
     if sum(job['count'] for job in jobs) > 100:

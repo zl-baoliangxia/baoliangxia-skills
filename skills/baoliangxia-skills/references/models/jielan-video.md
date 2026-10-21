@@ -20,7 +20,9 @@ Omitted `--aspect-ratio` becomes `16:9`. Omitted `--resolution` becomes `720p` f
 | Resolution | `--resolution VALUE` | Standard: `720p`/`1080p`/`2k`/`4k`; lite/mini: `720p`/`1080p` |
 | Primary image | `--image-upload-id ID` | General driving image |
 | Reference images/videos | repeat matching reference flags | Upload first |
-| Reference audio | `--audio-upload-id ID` | Requires a supported visual input for combinations the upstream enforces |
+| Reference audio | `--reference-audio-id ID` | One upload; legacy `--audio-upload-id` remains supported |
+| Generated audio | `--option generate_audio=true|false` | Defaults to `true`; controls generated sound |
+| Watermark | `--watermark true|false` | Defaults to `false` |
 
 ```bash
 python3 {baseDir}/scripts/create_model_generation.py "生成竖屏商品视频" \
@@ -29,5 +31,5 @@ python3 {baseDir}/scripts/create_model_generation.py "生成竖屏商品视频" 
 
 ## 不可用能力
 
-The Gateway does not expose `generate_audio`, return-last-frame, watermark, seed, or callback controls. Do not send the upstream `zl-video*` names as baoliangxia model identifiers.
+The Gateway exposes `generate_audio` and watermark through the listed options. Return-last-frame, seed, and callback controls remain unavailable. Do not send the upstream `zl-video*` names as baoliangxia model identifiers.
 

@@ -28,5 +28,5 @@ python3 {baseDir}/scripts/create_model_generation.py "商品主图，白色背�
 
 ## 不可用能力
 
-The Gateway does not expose `layer_decomposition`, exact pixel size, `1.5K`, prompt optimization controls, response format, watermark, web search, streaming, or output count. Do not pass `--n` for this model.
+`--watermark true|false` controls watermark and defaults to `false`. The Gateway does not expose `layer_decomposition`, exact pixel size, `1.5K`, prompt optimization controls, response format, web search, streaming, or output count. Do not pass `--n` for this model.
 
